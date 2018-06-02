@@ -55,7 +55,7 @@ use Obullo\Config\Cache\FileHandler;
 use Obullo\Config\Reader\YamlReader;
 use Obullo\Config\Loader;
 
-$cacheHandler = new FileHandler('/tmp');
+$cacheHandler = new FileHandler('/path/to/cache/folder');
 ```
 
 Konfigürasyon dosyası
@@ -84,7 +84,7 @@ Yüklenen her bir dosya belirtilen önbellekleme işleyicisi ile önbelleğe al�
 * MemcachedHandler
 * RedisHandler
 
-Varsayılan sürücü `FileHandler` sınıfıdır. FileHandler sınıfı `/tmp` klasörüne ayarlanmamışsa yazma işlemlerini yürütebilmesi için belirtilen dizine yazma izni verilmesi gerekir.
+Varsayılan sürücü `FileHandler` sınıfıdır. Eğer önbellek işleyici FileHandler olarak ayarlanmışsa yazma işlemlerinin yürütülebilmesi için belirtilen dizine yazma izni verilmesi gerekir.
 
 ## Ortam Değişkeni
 

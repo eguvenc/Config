@@ -56,7 +56,7 @@ use Obullo\Config\Cache\FileHandler;
 use Obullo\Config\Reader\YamlReader;
 use Obullo\Config\Loader;
 
-$cacheHandler = new FileHandler('/tmp');
+$cacheHandler = new FileHandler('/path/to/cache/folder');
 ```
 
 Reading config file

@@ -56,7 +56,7 @@ use Obullo\Config\Cache\FileHandler;
 use Obullo\Config\Reader\YamlReader;
 use Obullo\Config\Loader;
 
-$cacheHandler = new FileHandler('/tmp');
+$cacheHandler = new FileHandler('/path/to/cache/folder');
 ```
 
 Reading configuration file
@@ -85,7 +85,7 @@ Each uploaded file is cached with the specified cache handler and this cache is 
 * MemcachedHandler
 * RedisHandler
 
-The default cache handler is `FileHandler` class. If the FileHandler class is not set to the `/tmp` folder, you need to set write permission to write to the specified directory.
+The default cache handler is `FileHandler` class. If the cache handler is FileHandler, you need to set write permission to write to the specified directory.
 
 ## Environment variable
 
