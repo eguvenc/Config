@@ -59,9 +59,9 @@ use Obullo\Config\Loader;
 $cacheHandler = new FileHandler('/tmp');
 ```
 
-Read config file
+Reading config file
 
-```
+```php
 $loader = new Loader;
 $loader->registerReader('yaml', new YamlReader($cacheHandler));
 
