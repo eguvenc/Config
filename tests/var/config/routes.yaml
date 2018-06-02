@@ -1,0 +1,12 @@
+
+# name:
+#    path: /
+#    handler: Tests\App\Controller\DefaultController::index
+
+home:
+    path: /
+    handler: Tests\App\Controller\DefaultController::index
+
+test:
+    path: /<locale:locale>/test
+    handler: Tests\App\Controller\DefaultController::test

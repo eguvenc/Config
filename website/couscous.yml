@@ -1,0 +1,23 @@
+template:
+    directory: .
+    url: https://github.com/Obullo/CouscousTemplate.git
+
+title: Obullo / Config
+
+languages: ["en", "tr"]
+defaultLanguage: en
+
+sidebar:
+  default:
+    - title: Obullo Components
+    - subtitle: Links
+    - text: Homepage
+      link: http://obullo.com
+    - text: Github Repository
+      link: http://github.com/obullo/Config
+    - line: true
+    - html: 
+
+footer:
+  default: |
+#© 2018

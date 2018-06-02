@@ -1,0 +1,11 @@
+
+# name:
+#    path: /
+#    handler: Tests\App\Controller\DefaultController::index
+
+home:
+    path: /
+    handler: Tests\App\Controller\DefaultController::index
+    middleware: 
+      - Tests\App\Middleware\Test
+      - Tests\App\Middleware\Dummy

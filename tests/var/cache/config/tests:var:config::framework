@@ -1,0 +1,1 @@
+a:2:{s:9:"framework";a:3:{s:6:"cookie";a:5:{s:6:"domain";N;s:4:"path";s:1:"/";s:6:"secure";b:0;s:8:"httpOnly";b:1;s:6:"expire";i:0;}s:7:"session";a:1:{s:4:"name";s:8:"sessions";}s:10:"translator";a:1:{s:14:"default_locale";s:2:"en";}}s:9:"__mtime__";i:1527444895;}
