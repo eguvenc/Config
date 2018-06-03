@@ -129,7 +129,7 @@ amqp:
     vhost: /
 ```
 
-> You can use the `putenv ('VARIABLE = VALUE')` method to assign Env variables, or the more comprehensive <a href="https://packagist.org/packages/vlucas/phpdotenv"> vlucas / phpdotenv </a> package for this method .
+> You can use the `putenv('VARIABLE=VALUE')` method to assign Env variables, or the more comprehensive <a href="https://packagist.org/packages/vlucas/phpdotenv">vlucas/phpdotenv</a> package for this method .
 
 ## Configuration variables
 
@@ -177,7 +177,7 @@ echo $routes['home']['handler']; // App\Controller\DefaultController::index
 
 For object type you need to send `true` as the second parameter.
 
-```
+```php
 $routes = $loader->load(ROOT, '/config/routes.yaml', true)
 
 echo $routes->home->method; // GET
