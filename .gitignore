@@ -1,5 +1,5 @@
 website/.couscous/
 public/
+config/
 vendor/
-App/
 composer.lock

@@ -1,1 +1,0 @@
-a:3:{s:4:"home";a:2:{s:4:"path";s:1:"/";s:7:"handler";s:45:"Tests\App\Controller\DefaultController::index";}s:4:"test";a:2:{s:4:"path";s:21:"/<locale:locale>/test";s:7:"handler";s:44:"Tests\App\Controller\DefaultController::test";}s:9:"__mtime__";i:1523204619;}

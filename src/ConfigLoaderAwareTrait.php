@@ -2,9 +2,9 @@
 
 namespace Obullo\Config;
 
-use Obullo\Config\LoaderInterface as Loader;
+use Obullo\Config\ConfigLoaderInterface as Loader;
 
-trait LoaderAwareTrait
+trait ConfigLoaderAwareTrait
 {
     /**
      * Loader

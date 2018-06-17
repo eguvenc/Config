@@ -2,15 +2,9 @@
 
 namespace Obullo\Config;
 
-use Obullo\Config\LoaderInterface as Loader;
+use Obullo\Config\ConfigLoaderInterface as Loader;
 
-/**
- * Loader aware interface
- * 
- * @copyright Obullo
- * @license   http://opensource.org/licenses/MIT MIT license
- */
-interface LoaderAwareInterface
+interface ConfigLoaderAwareInterface
 {
     /**
      * Set loader

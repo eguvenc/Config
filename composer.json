@@ -1,11 +1,12 @@
 {
     "name": "obullo/config",
     "type": "library",
-    "description": "Obullo config is a package that assumes configuration management by reading the configuration files in your application.",
+    "description": "Configuration file loader built on zend/config package that comes with environment support.",
     "keywords": [
         "config",
         "reader",
-        "zend"
+        "zend",
+        "environment"
     ],
     "homepage": "http://config.obullo.com",
     "license": "MIT",
@@ -29,9 +30,12 @@
     "require": {
         "php": "^7.0",
         "zendframework/zend-config": "^3.1",
-        "symfony/yaml": "^3.0"
+        "symfony/yaml": "^3.0",
+        "zendframework/zend-filter": "^2.8",
+        "zendframework/zend-config-aggregator": "^1.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^4.8"
+        "phpunit/phpunit": "^4.8",
+        "zendframework/zend-servicemanager": "^3.3"
     }
 }

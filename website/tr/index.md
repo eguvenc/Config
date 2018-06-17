@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/obullo/Config.svg?branch=master)](https://travis-ci.org/obullo/Config)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
 
-> Uygulamanızdaki konfigürasyon dosyalarını okuyarak konfigürasyon yönetimi üstlenen bağımsız bir pakettir.
+> Konfigürasyon yükleyici, ortam dosyaları desteği ile gelen `zend/config`  paketi üzerine geliştirilmiş bir pakettir.
 
 ## Yükleme
 
@@ -28,7 +28,111 @@ $ vendor/bin/phpunit
 
 ## Başlangıç
 
-Örnel bir .yaml konfigürasyon dosyası.
+Küresel konfigürasyon
+
+```php
+require 'vendor/autoload.php';
+
+define('ROOT', '/var/www/myproject/');
+define('CONFIG_CACHE_FILE', 'cache/config.php');
+
+use Zend\ServiceManager\ServiceManager;
+use Symfony\Component\Yaml\Yaml as SymfonyYaml;
+use Zend\Config\Config;
+use Zend\Config\Factory;
+use Zend\Config\Reader\Yaml as YamlReader;
+
+use Zend\ConfigAggregator\ArrayProvider;
+use Zend\ConfigAggregator\ConfigAggregator;
+use Zend\ConfigAggregator\ZendConfigProvider;
+
+$container = new ServiceManager;
+$container->setService('yaml', new YamlReader([SymfonyYaml::class, 'parse']));
+
+Factory::registerReader('yaml', $container->get('yaml'));
+Factory::setReaderPluginManager($container);
+
+$aggregator = new ConfigAggregator(
+    [
+        new ArrayProvider([ConfigAggregator::ENABLE_CACHE => true]),
+        new ZendConfigProvider(ROOT.'config/autoload/{,*.}{json,yaml,php}'),
+    ],
+    CONFIG_CACHE_FILE
+);
+$config = $aggregator->getMergedConfig();
+```
+
+Küresel konfigürasyon nesnesi
+
+```php
+$container->setService('config', new Config($config, true));  
+```
+
+Yerel konfigürasyon yükleyicisi
+
+```php
+use Obullo\Config\ConfigLoader;
+
+$loader = new ConfigLoader(
+    $config,
+    CONFIG_CACHE_FILE
+);
+$container->setService('loader', $loader);
+```
+
+### Küresel dosyaları okumak
+
+```php
+$container->get('config')->foo->bar; // value
+```
+
+### Yerel dosyaları okumak
+
+```php
+$amqp = $container->get('loader')
+        ->load(ROOT, '/config/amqp.yaml')
+        ->amqp;
+
+echo $amqp->host; // 127.0.0.1
+```
+
+### Okuyucular
+
+Eğer yeni bir okuyucu eklemek istersek bunu en tepede ilan etmemiz gerekir.
+
+```php
+$container = new ServiceManager;
+$container->setService('json', new JsonReader);
+$container->setService('yaml', new YamlReader([SymfonyYaml::class, 'parse']));
+
+Factory::registerReader('json', $container->get('json'));
+Factory::registerReader('yaml', $container->get('yaml'));
+Factory::setReaderPluginManager($container);
+```
+
+Json dosyalarını okumak
+
+```php
+$amqp = $container->get('loader')
+        ->load(ROOT, '/config/amqp.json')
+        ->amqp;
+
+echo $amqp->host; // 127.0.0.1
+```
+
+Php dosyaları için herhangi bir tanımlamaya gerek duyulmaz.
+
+```php
+$amqp = $container->get('loader')
+        ->load(ROOT, '/config/amqp.php')
+        ->amqp;
+
+echo $amqp->host; // 127.0.0.1
+```
+
+## Ortam değişkeni
+
+Örnek bir .yaml konfigürasyon dosyası.
 
 ```
 # amqp
@@ -37,84 +141,59 @@ $ vendor/bin/phpunit
 amqp:
     host: 127.0.0.1
     port: 5672
-    username: '%env(AMQP_USERNAME)%'
-    password: '%env(AMQP_PASSWORD)%'
+    username: 'env(AMQP_USERNAME)'
+    password: 'env(AMQP_PASSWORD)'
     vhost: /
 ```
 
-Uygulama konfigürasyonu
+Örnek ortam değişkenlerini dolduralım.
 
 ```php
-require '../vendor/autoload.php';
-
-define('ROOT', '/var/www/');
 putenv('AMQP_USERNAME', 'guest');
 putenv('AMQP_PASSWORD', 'guest');
-
-use Obullo\Config\Cache\FileHandler;
-use Obullo\Config\Reader\YamlReader;
-use Obullo\Config\Loader;
-
-$cacheHandler = new FileHandler('/path/to/cache/folder');
 ```
 
-Konfigürasyon dosyası
+Env değerlerini okumak için env işleyicisini çağırıyoruz.
+
+```
+use Obullo\Config\Processor\Env as EnvProcessor;
+```
 
 ```php
-$loader = new Loader;
-$loader->registerReader('yaml', new YamlReader($cacheHandler));
+$loader = $container->get('loader');
+$loader->addProcessor(new EnvProcessor);
 
-$amqp = $loader->load(ROOT, '/config/amqp.yaml', true)
+$amqp = $loader->load(ROOT, '/config/amqp.yaml')
         ->amqp;
 
-echo $amqp->host; // 127.0.0.1
-echo $amqp->port; // 5672
 echo $amqp->username;  // guest
 echo $amqp->password;  // guest
-echo $amqp->vhost;  // "/"
 ```
 
-## Önbellekleme
+Eğer dosya yolu içerisinde '%s' değeri kullanırsak bu değişken 'APP_ENV' değeri ile değiştirilir.
 
-Yüklenen her bir dosya belirtilen önbellekleme işleyicisi ile önbelleğe alınır ve değişiklik yaptığınızda bu önbellek tazelenir. Böylece her defasında bu dosyalar için çözümleme işlemi yapılmamış olur.
-
-#### Önbellek sınıfları
-
-* FileHandler
-* MemcachedHandler
-* RedisHandler
-
-Varsayılan sürücü `FileHandler` sınıfıdır. Eğer önbellek işleyici FileHandler olarak ayarlanmışsa yazma işlemlerinin yürütülebilmesi için belirtilen dizine yazma izni verilmesi gerekir.
-
-## Ortam Değişkeni
-
-Bir klasör yolu içerisinde '%s' değişkeni kullandığınızda bu değişken `APP_ENV` değeri ile değiştirilir.
 
 ```
 /config/%s/amqp.yaml
 /config/dev/amqp.yaml  // after replacement
 ```
 
-Ortam değişkeni `setEnv` metodu ile ayarlanabilir.
+Ortam değişkeni `setEnv` metodu ile atanabilir.
 
 ```php
-$loader = new Loader;
+$loader = $container->get('loader');
 $loader->setEnv(getenv('APP_ENV'));
-$loader->registerReader('yaml', new YamlReader($cacheHandler));
+$loader->addProcessor(new EnvProcessor);
 
-$amqp = $loader->load(ROOT, '/config/%s/amqp.yaml', true)
+$amqp = $loader->load(ROOT, '/config/%s/amqp.yaml')
         ->amqp;
 
-echo $amqp->host; // 127.0.0.1
-echo $amqp->port; // 5672
-echo $amqp->username;  // guest
 echo $amqp->password;  // guest
-echo $amqp->vhost;  // "/"
 ```
 
 ## getenv() fonksiyonu
 
-Dosya içerisindeki tanımlı olan '%env()%' fonksiyonları için her defasında doğal php `getenv()` metodu çalıştırılır.
+Dosya içerisindeki tanımlı olan 'env()' fonksiyonları için her defasında doğal php getenv() metodu çalıştırılır.
 
 ```
 # amqp
@@ -123,84 +202,45 @@ Dosya içerisindeki tanımlı olan '%env()%' fonksiyonları için her defasında
 amqp:
     host: 127.0.0.1
     port: 5672
-    username: '%env(AMQP_USERNAME)%'
-    password: '%env(AMQP_PASSWORD)%'
+    username: 'env(AMQP_USERNAME)'
+    password: 'env(AMQP_PASSWORD)'
     vhost: /
 ```
 
-> Env değişkenleri atamak için `putenv('VARIABLE=VALUE')` metodunu yada bunun için daha kapsamlı olan <a href="https://packagist.org/packages/vlucas/phpdotenv">vlucas/phpdotenv</a> paketini kullanabilirsiniz.
+> Env değişkenleri atamak için putenv('VARIABLE=VALUE') metodunu yada bunun için daha kapsamlı olan <a href="https://packagist.org/packages/vlucas/phpdotenv">vlucas/phpdotenv</a> paketini kullanabilirsiniz.
 
 
-## Konfigurasyon değişkenleri
+## Constant işleyicisi
 
-Aşağıdaki gibi bazı durumlarda bir konfigürasyon dosyası içerisinde dinamik değişkenler kullanmanız gerekir.
+Aşağıdaki gibi bazı durumlarda bir konfigürasyon dosyası içerisinde php sabitlerini kullanmanız gerekebilir.
 
 ```php
 # cache
 # 
 
-dir: '%root%/var/cache/'
+dir: 'ROOT/var/cache/'
 ```
 
-Bu durumda `addVariable()` metodu ile okuyucu sınıfınıza bu değişkenleri önceden tanımlanız gerekir.
-
+Bu durumda aşağıdaki gibi Constant işleyicisini kullanmanız gereklidir. 
 
 ```php
-$reader = new YamlReader($cacheHandler);
-$reader->addVariable('%root%', ROOT);
-$reader->addVariable('%foo%','bar');
-```
+use Zend\Config\Processor\Constant as ConstantProcessor;
 
-## Dosyaları tek tek yüklemek
-
-Örnek bir .yaml dosyası
-
-```
-# routes
-#
-
-home:
-    method: GET
-    path: /
-    handler: App\Controller\DefaultController::index
-```
-
-Dizi türünde okuma
-
-```php
-$routes = $loader->load(ROOT, '/config/routes.yaml');
-
-echo $routes['home']->method; // GET
-echo $routes['home']->path; // "/""
-echo $routes['home']->handler; // App\Controller\DefaultController::index
-```
-
-Nesne türüne dönüştürme için ikinci parametreden `true` değeri göndermeniz gerekir.
-
-```php
-$routes = $loader->load(ROOT, '/config/routes.yaml', true)
-
-echo $routes->home->method; // GET
-echo $routes->home->path; // "/""
-echo $routes->home->handler; // App\Controller\DefaultController::index
-```
-
-## Dosyaları bir kerede yükleme
-
-Eğer uygulama başlatıldığında bazı konfigürasyon dosyalarını toplu olarak yüklemeniz gerekiyor ise tek tek yüklemek yerine bunun için aşağıdaki yöntemi izleyebilirsiniz.
-
-```php
-$loader = new Loader;
+$loader = $container->get('loader');
 $loader->setEnv(getenv('APP_ENV'));
-$loader->registerReader('yaml', new YamlReader($cacheHandler));
+$loader->addProcessor(new ConstantProcessor);
 
-// Put all config files here you want to load at bootstrap.
+$cache = $loader->load(ROOT, '/config/%s/cache.yaml')
+        ->cache;
 
-$config = $loader->loadFiles(
-    [
-        ROOT.'/config/%s/framework.yaml',
-        ROOT.'/config/%s/database.yaml',
-    ],
-    true
-);
+echo $cache->dir; // /var/www/myproject/var/cache/
+```
+
+## Dizi türüne dönüştürme
+
+```php
+$amqp = $loader->load(ROOT, '/config/%s/amqp.yaml')
+        ->toArray()['amqp'];
+
+echo $amqp['host']; // 127.0.0.1
 ```
