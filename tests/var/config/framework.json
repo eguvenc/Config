@@ -1,0 +1,18 @@
+{
+	"framework":
+	{
+		"cookie":{
+			"domain":null,
+			"path":"\/",
+			"secure":false,
+			"httpOnly":true,
+			"expire":0
+		},
+		"session": {
+			"name":"sessions"
+		},
+		"translator":{
+			"default_locale":"en"
+		}
+	}
+}

@@ -1,0 +1,10 @@
+
+# amqp
+# 
+
+amqp:
+    host: 127.0.0.1
+    port: 5672
+    username: 'env(AMQP_USERNAME)'
+    password: 'env(AMQP_PASSWORD)'
+    vhost: /

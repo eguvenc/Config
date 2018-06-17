@@ -1,5 +1,4 @@
 website/.couscous/
 public/
-config/
 vendor/
 composer.lock
