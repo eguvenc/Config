@@ -1,5 +1,4 @@
 website/.couscous/
 public/
 vendor/
-tests/var/cache/
 composer.lock
