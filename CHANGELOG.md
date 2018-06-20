@@ -3,7 +3,7 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 1.0.1 - 2018-06-17
+## 1.0.1 - 2018-06-20
 
 ### Added
 

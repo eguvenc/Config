@@ -231,6 +231,7 @@ $loader->addProcessor(new ConstantProcessor);
 $cache = $loader->load(ROOT, '/config/%s/cache.yaml')
         ->cache;
 
+echo ROOT; // /var/www/myproject
 echo $cache->dir; // /var/www/myproject/var/cache/
 ```
 
