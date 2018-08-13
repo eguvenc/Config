@@ -3,6 +3,7 @@
 
 [![Build Status](https://travis-ci.org/obullo/Config.svg?branch=master)](https://travis-ci.org/obullo/Config)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
+[![Total Downloads](https://img.shields.io/packagist/dt/obullo/config.svg)](https://packagist.org/packages/obullo/config)
 
 > Configuration file loader built on `zend/config` package that comes with environment support.
 
