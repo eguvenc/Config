@@ -2,10 +2,9 @@
 
 namespace Obullo\Config;
 
-use Obullo\Config\PhpReader;
-
 use Zend\Config\Config;
 use Zend\Config\Factory;
+use Obullo\Config\PhpReader;
 use Zend\Config\Reader\ReaderInterface;
 use Zend\ConfigAggregator\ConfigAggregator;
 use Zend\Config\Processor\ProcessorInterface;
@@ -18,9 +17,24 @@ use Zend\Config\Processor\ProcessorInterface;
  */
 class ConfigLoader implements ConfigLoaderInterface
 {
+    /**
+     * @var $env
+     */
     protected $env;
+    
+    /**
+     * @var $config
+     */
     protected $config;
+    
+    /**
+     * @var $rocessors
+     */
     protected $processors = array();
+    
+    /**
+     * @var $cachedConfigFile
+     */
     protected $cachedConfigFile;
 
     /**
